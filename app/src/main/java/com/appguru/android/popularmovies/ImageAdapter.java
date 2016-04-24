@@ -1,29 +1,40 @@
 package com.appguru.android.popularmovies;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+
 /**
  * Created by jhani on 4/22/2016.
  */
-public class ImageAdapter extends BaseAdapter {
+public class ImageAdapter extends ArrayAdapter<PopularMovie> {
     private Context mContext;
 
-    public ImageAdapter(Context c) {
-        mContext = c;
+
+    public ImageAdapter(Context context, int resource, ArrayList<PopularMovie> popularMovieArrayList) {
+        super(context, resource, popularMovieArrayList);
     }
+
 
     public int getCount() {
-        return mThumbIds.length;
+
+
+
+        int count = 10;
+
+        return count;
     }
 
-    public Object getItem(int position) {
-        return null;
-    }
+
 
     public long getItemId(int position) {
         return 0;
@@ -32,9 +43,11 @@ public class ImageAdapter extends BaseAdapter {
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
+        PopularMovie popularMovie =getItem(position);
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
             imageView = new ImageView(mContext);
+
            // imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
             imageView.setLayoutParams(new GridView.LayoutParams(500, 500));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -43,7 +56,8 @@ public class ImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageResource(mThumbIds[position]);
+        //imageView.setImageResource(mThumbIds[position]);
+        Picasso.with(getContext()).load(popularMovie.getPosterUrl()).into(imageView);
         return imageView;
     }
 
