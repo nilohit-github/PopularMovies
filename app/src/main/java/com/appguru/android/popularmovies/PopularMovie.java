@@ -5,6 +5,11 @@ package com.appguru.android.popularmovies;
  */
 public class PopularMovie {
 
+    public PopularMovie()
+    {
+
+    }
+
     private String movieName ;
     private String id;
     private String posterUrl;

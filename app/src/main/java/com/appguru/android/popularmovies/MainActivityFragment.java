@@ -40,6 +40,7 @@ public class MainActivityFragment extends Fragment {
     //public ArrayList<MovieDetailsObject> mMovieDetailsArrayList = null;
     public ArrayList<PopularMovie> popularMovieArrayList;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +53,11 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        PopularMovie popularMovie = new PopularMovie();
+        popularMovie.setPosterUrl("http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg");
 
+        popularMovieArrayList = new ArrayList<PopularMovie>();
+        popularMovieArrayList.add(popularMovie);
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
         imageAdapter = new ImageAdapter(getContext(), R.layout.fragment_main,popularMovieArrayList);
         gridview.setAdapter(imageAdapter);
@@ -70,9 +75,9 @@ public class MainActivityFragment extends Fragment {
         fetchPopularMovie.execute();
     }
 
-    public class FetchPopularMovie extends AsyncTask {
+    public class FetchPopularMovie extends AsyncTask<Void,Void,ArrayList<PopularMovie> > {
 
-            protected ArrayList<PopularMovie> doInBackground(Object[] params) {
+            protected ArrayList<PopularMovie> doInBackground(Void...ArrayList) {
             // These two need to be declared outside the try/catch
 // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -130,8 +135,7 @@ public class MainActivityFragment extends Fragment {
 
             } catch (IOException e) {
                 Log.e("Fetch Movie", "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attempting
-                // to parse it.
+
                 movieJsonStr = null;
 
             } finally {
@@ -156,13 +160,14 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(Object result) {
-            super.onPostExecute(result);
+        protected void onPostExecute(ArrayList<PopularMovie> popularMovieArrayList) {
+            super.onPostExecute(popularMovieArrayList);
 
-            if (result != null) {
-                imageAdapter.clear();
-                for (int i = 0; i < popularMovieArrayList.size(); ++i) {
-                    imageAdapter.add(popularMovieArrayList.get(i));
+            if (popularMovieArrayList != null) {
+                //imageAdapter.clear();
+                Log.v("get url val", "::::" + popularMovieArrayList.get(1).toString());
+                for (int i = 1; i < popularMovieArrayList.size(); i++) {
+                     imageAdapter.add(popularMovieArrayList.get(i));
                     //    Log.e("MOVIE_APP_3", mMovieDetailsArrayList.get(i).m_strMovieTitle);
                 }
                 imageAdapter.notifyDataSetChanged();
@@ -189,7 +194,7 @@ public class MainActivityFragment extends Fragment {
             final String releaseDate = "release_date";
             //ArrayList<PopularMovie> popularMovieArrayList = new ArrayList<PopularMovie>();
 
-
+            Log.v("::::", "original json string: " + movieJsonStr);
             JSONObject movieJsonObject = new JSONObject(movieJsonStr);
             JSONArray movieJsonObjectJSONArray = movieJsonObject.getJSONArray("results");
             Log.v("::::", "movie list entry: " + movieJsonObjectJSONArray.toString());
@@ -203,19 +208,17 @@ public class MainActivityFragment extends Fragment {
 
                 PopularMovie popularMovie = new PopularMovie();
                 popularMovie.setPosterUrl(posterBasePath + movieObject.getString(poster_path));
+                Log.v("::::", "post path: " + popularMovie.getPosterUrl());
                 popularMovie.setId(movieObject.getString(movie_id));
                 popularMovie.setMovieName(movieObject.getString(movie_title));
                 popularMovie.setOverView(movieObject.getString(movieOverview));
                 popularMovieArrayList.add(popularMovie);
-                //String test= popularMovie.getPosterUrl();
-                //Log.v("test::","postar url"+test);
-
 
                 // Get the JSON object representing the day
 
             }
 
-
+            Log.v("movie array list size", "::::" + popularMovieArrayList.size());
             return popularMovieArrayList;
 
         }

@@ -17,21 +17,31 @@ import java.util.ArrayList;
  * Created by jhani on 4/22/2016.
  */
 public class ImageAdapter extends ArrayAdapter<PopularMovie> {
-    private Context mContext;
+    private Context context;
+    int layoutResourceId;
+    ArrayList<PopularMovie> popularMovieArrayList ;
+    int listOfMovies=0 ;
+
 
 
     public ImageAdapter(Context context, int resource, ArrayList<PopularMovie> popularMovieArrayList) {
         super(context, resource, popularMovieArrayList);
+        this.context=context;
+        this.layoutResourceId=layoutResourceId;
+        this.popularMovieArrayList=popularMovieArrayList;
     }
 
 
     public int getCount() {
 
 
+    if(popularMovieArrayList!=null)
+        {
+            listOfMovies = popularMovieArrayList.size();
+        }
 
-        int count = 10;
 
-        return count;
+        return listOfMovies;
     }
 
 
@@ -46,7 +56,7 @@ public class ImageAdapter extends ArrayAdapter<PopularMovie> {
         PopularMovie popularMovie =getItem(position);
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
-            imageView = new ImageView(mContext);
+            imageView = new ImageView(context);
 
            // imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
             imageView.setLayoutParams(new GridView.LayoutParams(500, 500));
@@ -61,18 +71,5 @@ public class ImageAdapter extends ArrayAdapter<PopularMovie> {
         return imageView;
     }
 
-    // references to our images
-    private Integer[] mThumbIds = {
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7,
-            R.drawable.sample_0, R.drawable.sample_1,
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7,
-            R.drawable.sample_0, R.drawable.sample_1,
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7
-    };
+
 }
