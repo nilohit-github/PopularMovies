@@ -1,9 +1,14 @@
 package com.appguru.android.popularmovies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.Date;
+
 /**
  * Created by jhani on 4/23/2016.
  */
-public class PopularMovie {
+public class PopularMovie implements Parcelable {
 
     public PopularMovie()
     {
@@ -13,6 +18,32 @@ public class PopularMovie {
     private String movieName ;
     private String id;
     private String posterUrl;
+    private String releaseDate;
+    private String  rating;
+
+
+
+
+    protected PopularMovie(Parcel in) {
+        movieName = in.readString();
+        id = in.readString();
+        posterUrl = in.readString();
+        overView = in.readString();
+        rating = in.readString();
+        releaseDate = in.readString();
+    }
+
+    public static final Creator<PopularMovie> CREATOR = new Creator<PopularMovie>() {
+        @Override
+        public PopularMovie createFromParcel(Parcel in) {
+            return new PopularMovie(in);
+        }
+
+        @Override
+        public PopularMovie[] newArray(int size) {
+            return new PopularMovie[size];
+        }
+    };
 
     public String getMovieName() {
         return movieName;
@@ -45,6 +76,36 @@ public class PopularMovie {
     public void setOverView(String overView) {
         this.overView = overView;
     }
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
 
     private String overView;
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(movieName);
+        dest.writeString(id);
+        dest.writeString(posterUrl);
+        dest.writeString(overView);
+        dest.writeString(rating);
+        dest.writeString(releaseDate);
+    }
 }

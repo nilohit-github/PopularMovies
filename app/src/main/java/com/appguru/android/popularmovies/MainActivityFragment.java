@@ -1,15 +1,21 @@
 package com.appguru.android.popularmovies;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.text.format.Time;
+
 import android.util.Log;
 import android.view.LayoutInflater;
+
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.json.JSONArray;
@@ -21,11 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Objects;
 
 
 /**
@@ -33,19 +36,20 @@ import java.util.Objects;
  */
 public class MainActivityFragment extends Fragment {
 
+    private String pref;
+
+
     public MainActivityFragment() {
     }
 
     ImageAdapter imageAdapter;
-    //public ArrayList<MovieDetailsObject> mMovieDetailsArrayList = null;
     public ArrayList<PopularMovie> popularMovieArrayList;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Add this line in order for this fragment to handle menu events.
-         setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -55,12 +59,24 @@ public class MainActivityFragment extends Fragment {
 
         PopularMovie popularMovie = new PopularMovie();
         popularMovie.setPosterUrl("http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg");
-
         popularMovieArrayList = new ArrayList<PopularMovie>();
         popularMovieArrayList.add(popularMovie);
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
-        imageAdapter = new ImageAdapter(getContext(), R.layout.fragment_main,popularMovieArrayList);
+        imageAdapter = new ImageAdapter(getContext(), R.layout.fragment_main, popularMovieArrayList);
         gridview.setAdapter(imageAdapter);
+        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                imageAdapter.getItem(position);
+                PopularMovie pm = imageAdapter.getItem(position);
+                Intent movieIntent = new Intent(getActivity(), DetailActivity.class);
+                movieIntent.putExtra(Intent.EXTRA_TEXT, (Parcelable) pm);
+                startActivity(movieIntent);
+
+
+            }
+        });
         return rootView;
     }
 
@@ -72,37 +88,37 @@ public class MainActivityFragment extends Fragment {
 
     public void getPopularMovies() {
         FetchPopularMovie fetchPopularMovie = new FetchPopularMovie();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        pref = prefs.getString("sort", null);
         fetchPopularMovie.execute();
     }
 
-    public class FetchPopularMovie extends AsyncTask<Void,Void,ArrayList<PopularMovie> > {
 
-            protected ArrayList<PopularMovie> doInBackground(Void...ArrayList) {
+    public class FetchPopularMovie extends AsyncTask<Void, Void, ArrayList<PopularMovie>> {
+
+        protected ArrayList<PopularMovie> doInBackground(Void... ArrayList) {
             // These two need to be declared outside the try/catch
-// so that they can be closed in the finally block.
+            // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
-
-// Will contain the raw JSON response as a string.
+            // Will contain the raw JSON response as a string.
             String movieJsonStr = null;
-
 
             try {
 
                 String apiKey = BuildConfig.POPULAR_MOVIES_API_KEY;
-                //   URL url = new URL(baseUrl.concat(apiKey));
+                if (pref == null) {
+                    pref = "popular";
+                }
                 Uri.Builder builder = new Uri.Builder();
                 builder.scheme("http")
                         .authority("api.themoviedb.org")
                         .appendPath("3")
                         .appendPath("movie")
-                        .appendPath("popular")
+                        .appendPath(pref)
                         .appendQueryParameter("api_key", apiKey);
                 URL url = new URL(builder.build().toString());
-
-                Log.v("get url val", "::::" + url);
-
                 // Create the request to moviedb, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
@@ -162,16 +178,8 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<PopularMovie> popularMovieArrayList) {
             super.onPostExecute(popularMovieArrayList);
+            imageAdapter.notifyDataSetChanged();
 
-            if (popularMovieArrayList != null) {
-                //imageAdapter.clear();
-                Log.v("get url val", "::::" + popularMovieArrayList.get(1).toString());
-                for (int i = 1; i < popularMovieArrayList.size(); i++) {
-                     imageAdapter.add(popularMovieArrayList.get(i));
-                    //    Log.e("MOVIE_APP_3", mMovieDetailsArrayList.get(i).m_strMovieTitle);
-                }
-                imageAdapter.notifyDataSetChanged();
-            }
         }
 
 
@@ -192,15 +200,12 @@ public class MainActivityFragment extends Fragment {
             final String posterBasePath = "http://image.tmdb.org/t/p/w185/";
             final String movieOverview = "overview";
             final String releaseDate = "release_date";
-            //ArrayList<PopularMovie> popularMovieArrayList = new ArrayList<PopularMovie>();
+            final String rating = "vote_average";
 
-            Log.v("::::", "original json string: " + movieJsonStr);
             JSONObject movieJsonObject = new JSONObject(movieJsonStr);
             JSONArray movieJsonObjectJSONArray = movieJsonObject.getJSONArray("results");
-            Log.v("::::", "movie list entry: " + movieJsonObjectJSONArray.toString());
 
-
-            //String[] resultStrs = new String[];
+            popularMovieArrayList.clear();
             for (int i = 0; i < movieJsonObjectJSONArray.length(); i++) {
                 // For now, using the format "Day, description, hi/low"
                 JSONObject movieObject = movieJsonObjectJSONArray.getJSONObject(i);
@@ -212,13 +217,12 @@ public class MainActivityFragment extends Fragment {
                 popularMovie.setId(movieObject.getString(movie_id));
                 popularMovie.setMovieName(movieObject.getString(movie_title));
                 popularMovie.setOverView(movieObject.getString(movieOverview));
+                popularMovie.setRating(movieObject.getString(rating));
+                popularMovie.setReleaseDate(movieObject.getString(releaseDate));
                 popularMovieArrayList.add(popularMovie);
-
-                // Get the JSON object representing the day
 
             }
 
-            Log.v("movie array list size", "::::" + popularMovieArrayList.size());
             return popularMovieArrayList;
 
         }
