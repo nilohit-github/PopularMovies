@@ -1,5 +1,6 @@
 package com.appguru.android.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,13 +39,16 @@ import java.util.ArrayList;
 public class MainActivityFragment extends Fragment {
 
     private String pref;
-
+    LayoutInflater inflater;
+    ViewGroup container;
+    View rootView;
+    ImageAdapter imageAdapter;
+    public ArrayList<PopularMovie> popularMovieArrayList;
+    GridView gridview;
 
     public MainActivityFragment() {
     }
 
-    ImageAdapter imageAdapter;
-    public ArrayList<PopularMovie> popularMovieArrayList;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,13 +60,15 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        this.inflater = inflater;
+        this.container = container;
+        rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         PopularMovie popularMovie = new PopularMovie();
         popularMovie.setPosterUrl("http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg");
         popularMovieArrayList = new ArrayList<PopularMovie>();
         popularMovieArrayList.add(popularMovie);
-        GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
+        gridview = (GridView) rootView.findViewById(R.id.gridview);
         imageAdapter = new ImageAdapter(getContext(), R.layout.fragment_main, popularMovieArrayList);
         gridview.setAdapter(imageAdapter);
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -95,6 +102,8 @@ public class MainActivityFragment extends Fragment {
 
 
     public class FetchPopularMovie extends AsyncTask<Void, Void, ArrayList<PopularMovie>> {
+
+
 
         protected ArrayList<PopularMovie> doInBackground(Void... ArrayList) {
             // These two need to be declared outside the try/catch
@@ -177,8 +186,14 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<PopularMovie> popularMovieArrayList) {
-            super.onPostExecute(popularMovieArrayList);
-            imageAdapter.notifyDataSetChanged();
+            if(popularMovieArrayList.isEmpty()) {
+                rootView = inflater.inflate(R.layout.errorlayout, container, false);
+                TextView textView = (TextView) rootView.findViewById(R.id.errorView);
+            }
+            else {
+                super.onPostExecute(popularMovieArrayList);
+                imageAdapter.notifyDataSetChanged();
+            }
 
         }
 
@@ -201,26 +216,30 @@ public class MainActivityFragment extends Fragment {
             final String movieOverview = "overview";
             final String releaseDate = "release_date";
             final String rating = "vote_average";
-
-            JSONObject movieJsonObject = new JSONObject(movieJsonStr);
-            JSONArray movieJsonObjectJSONArray = movieJsonObject.getJSONArray("results");
-
             popularMovieArrayList.clear();
-            for (int i = 0; i < movieJsonObjectJSONArray.length(); i++) {
-                // For now, using the format "Day, description, hi/low"
-                JSONObject movieObject = movieJsonObjectJSONArray.getJSONObject(i);
+
+            if(!(movieJsonStr== null)) {
+                JSONObject movieJsonObject = new JSONObject(movieJsonStr);
+                JSONArray movieJsonObjectJSONArray = movieJsonObject.getJSONArray("results");
 
 
-                PopularMovie popularMovie = new PopularMovie();
-                popularMovie.setPosterUrl(posterBasePath + movieObject.getString(poster_path));
-                Log.v("::::", "post path: " + popularMovie.getPosterUrl());
-                popularMovie.setId(movieObject.getString(movie_id));
-                popularMovie.setMovieName(movieObject.getString(movie_title));
-                popularMovie.setOverView(movieObject.getString(movieOverview));
-                popularMovie.setRating(movieObject.getString(rating));
-                popularMovie.setReleaseDate(movieObject.getString(releaseDate));
-                popularMovieArrayList.add(popularMovie);
 
+                for (int i = 0; i < movieJsonObjectJSONArray.length(); i++) {
+                    // For now, using the format "Day, description, hi/low"
+                    JSONObject movieObject = movieJsonObjectJSONArray.getJSONObject(i);
+
+
+                    PopularMovie popularMovie = new PopularMovie();
+                    popularMovie.setPosterUrl(posterBasePath + movieObject.getString(poster_path));
+                    Log.v("::::", "post path: " + popularMovie.getPosterUrl());
+                    popularMovie.setId(movieObject.getString(movie_id));
+                    popularMovie.setMovieName(movieObject.getString(movie_title));
+                    popularMovie.setOverView(movieObject.getString(movieOverview));
+                    popularMovie.setRating(movieObject.getString(rating));
+                    popularMovie.setReleaseDate(movieObject.getString(releaseDate));
+                    popularMovieArrayList.add(popularMovie);
+
+                }
             }
 
             return popularMovieArrayList;

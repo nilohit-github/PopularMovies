@@ -18,7 +18,7 @@ android {
         }
     }
     buildTypes.each {
-        it.buildConfigField 'String', 'POPULAR_MOVIES_API_KEY', '"put your own key"'
+        it.buildConfigField 'String', 'POPULAR_MOVIES_API_KEY',MyTMDBApiKey
     }
 
     repositories {
