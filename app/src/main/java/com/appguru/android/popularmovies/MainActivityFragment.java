@@ -3,6 +3,8 @@ package com.appguru.android.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcelable;
@@ -11,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 
 import android.view.View;
@@ -19,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,7 +49,9 @@ public class MainActivityFragment extends Fragment {
     ImageAdapter imageAdapter;
     public ArrayList<PopularMovie> popularMovieArrayList;
     GridView gridview;
-
+    Boolean internetAvailable;
+    CharSequence text = "No network coverage";
+    Toast toast;
     public MainActivityFragment() {
     }
 
@@ -62,29 +68,35 @@ public class MainActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         this.inflater = inflater;
         this.container = container;
-        rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        PopularMovie popularMovie = new PopularMovie();
-        popularMovie.setPosterUrl("http://image.tmdb.org/t/p/w185//nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg");
-        popularMovieArrayList = new ArrayList<PopularMovie>();
-        popularMovieArrayList.add(popularMovie);
-        gridview = (GridView) rootView.findViewById(R.id.gridview);
-        imageAdapter = new ImageAdapter(getContext(), R.layout.fragment_main, popularMovieArrayList);
-        gridview.setAdapter(imageAdapter);
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                imageAdapter.getItem(position);
-                PopularMovie pm = imageAdapter.getItem(position);
-                Intent movieIntent = new Intent(getActivity(), DetailActivity.class);
-                movieIntent.putExtra(Intent.EXTRA_TEXT, (Parcelable) pm);
-                startActivity(movieIntent);
+            rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            popularMovieArrayList = new ArrayList<PopularMovie>();
+            gridview = (GridView) rootView.findViewById(R.id.gridview);
+            imageAdapter = new ImageAdapter(getContext(), R.layout.fragment_main, popularMovieArrayList);
+            gridview.setAdapter(imageAdapter);
+            gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    imageAdapter.getItem(position);
+                    PopularMovie pm = imageAdapter.getItem(position);
+                    Intent movieIntent = new Intent(getActivity(), DetailActivity.class);
+                    movieIntent.putExtra(Intent.EXTRA_TEXT, (Parcelable) pm);
+                    startActivity(movieIntent);
 
+                }
+            });
 
-            }
-        });
         return rootView;
+    }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager = (ConnectivityManager)getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        boolean isAvailable = false;
+        if (networkInfo != null && networkInfo.isConnected()){
+            isAvailable = true;
+        }
+        return isAvailable;
     }
 
     @Override
@@ -97,7 +109,16 @@ public class MainActivityFragment extends Fragment {
         FetchPopularMovie fetchPopularMovie = new FetchPopularMovie();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         pref = prefs.getString("sort", null);
+        internetAvailable = isNetworkAvailable();
+        if(internetAvailable)
         fetchPopularMovie.execute();
+        else
+        {
+            int duration = Toast.LENGTH_LONG;
+            toast = Toast.makeText(getContext(), text, duration);
+            toast.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
+            toast.show();
+        }
     }
 
 
@@ -186,14 +207,21 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ArrayList<PopularMovie> popularMovieArrayList) {
-            if(popularMovieArrayList.isEmpty()) {
-                rootView = inflater.inflate(R.layout.errorlayout, container, false);
-                TextView textView = (TextView) rootView.findViewById(R.id.errorView);
-            }
-            else {
-                super.onPostExecute(popularMovieArrayList);
-                imageAdapter.notifyDataSetChanged();
-            }
+
+                if(popularMovieArrayList.size()==0)
+                {
+                    int duration = Toast.LENGTH_LONG;
+                    text ="Unable to fetch movies,Sorry for the inconvinience";
+                    toast = Toast.makeText(getContext(), text, duration);
+                    toast.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
+                else {
+
+                    super.onPostExecute(popularMovieArrayList);
+                    imageAdapter.notifyDataSetChanged();
+                }
+
 
         }
 
@@ -219,6 +247,7 @@ public class MainActivityFragment extends Fragment {
             popularMovieArrayList.clear();
 
             if(!(movieJsonStr== null)) {
+
                 JSONObject movieJsonObject = new JSONObject(movieJsonStr);
                 JSONArray movieJsonObjectJSONArray = movieJsonObject.getJSONArray("results");
 
