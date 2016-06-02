@@ -50,12 +50,16 @@ public class ImageAdapter extends ArrayAdapter<PopularMovie> {
         if (convertView == null) {
 
             imageView = new ImageView(context);
-            imageView.setLayoutParams(new GridView.LayoutParams(500, 500));
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+           // imageView.setLayoutParams(new GridView.LayoutParams(700, 700));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setAdjustViewBounds(true);
 
         } else {
             imageView = (ImageView) convertView;
         }
+        int width= context.getResources().getDisplayMetrics().widthPixels;
+
+
         Picasso.with(getContext()).load(popularMovie.getPosterUrl()).into(imageView);
         return imageView;
     }

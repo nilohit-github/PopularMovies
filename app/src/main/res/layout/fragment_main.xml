@@ -3,8 +3,12 @@
     android:id="@+id/gridview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:columnWidth="100dp"
     android:numColumns="auto_fit"
     android:stretchMode="columnWidth"
     android:gravity="center"
-    />
+    android:layout_gravity="center"
+    android:background="#000"
+    android:cacheColorHint="#000"
+    android:descendantFocusability="afterDescendants"
+    android:layout_alignParentTop="true" />
+

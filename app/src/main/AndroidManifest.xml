@@ -41,6 +41,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.appguru.android.popularmovies.MainActivity" />
         </activity>
+
+        <provider
+            android:authorities="@string/content_authority"
+            android:name=".data.FavouriteMovieProvider"
+            android:exported="false"
+            android:syncable="true" />
     </application>
 
 </manifest>

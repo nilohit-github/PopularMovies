@@ -3,6 +3,8 @@ package com.appguru.android.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Movie;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -12,6 +14,9 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -21,8 +26,11 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.appguru.android.popularmovies.data.MovieContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,18 +43,20 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private String pref;
     LayoutInflater inflater;
     ViewGroup container;
     View rootView;
     ImageAdapter imageAdapter;
+    private static final int FAVOURITE_LOADER = 0;
     public ArrayList<PopularMovie> popularMovieArrayList;
     GridView gridview;
     Boolean internetAvailable;
@@ -109,6 +119,11 @@ public class MainActivityFragment extends Fragment {
         FetchPopularMovie fetchPopularMovie = new FetchPopularMovie();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         pref = prefs.getString("sort", null);
+        if("favourite".equalsIgnoreCase(pref)) {
+            getLoaderManager().restartLoader(FAVOURITE_LOADER, null, this);
+            return;
+
+        }
         internetAvailable = isNetworkAvailable();
         if(internetAvailable)
         fetchPopularMovie.execute();
@@ -119,6 +134,63 @@ public class MainActivityFragment extends Fragment {
             toast.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
             toast.show();
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        // This is called when a new Loader needs to be created.  This
+        // fragment only uses one loader, so we don't care about checking the id.
+
+        // To only show current and future dates, filter the query to return weather only for
+        // dates after or including today.
+
+        // Sort order:  Ascending, by date.
+
+
+
+        Uri favMovieUri = MovieContract.MovieList.CONTENT_URI;
+
+        return new CursorLoader(getActivity(),
+                favMovieUri,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        popularMovieArrayList.clear();
+       int j = cursor.getCount();
+        if(j==0)
+        {
+            Toast.makeText(getActivity(), "You do not have any favourite movie :(", Toast.LENGTH_SHORT)
+                    .show();
+        }
+        else {
+            while (cursor.moveToNext()) {
+                PopularMovie popularMovie = new PopularMovie();
+
+                popularMovie.setPosterUrl(cursor.getString(cursor.getColumnIndex(MovieContract.MovieList.COLUMN_MOVIE_POSTER)));
+                Log.v("favo movie", "favo movie " + popularMovie.getPosterUrl());
+                popularMovie.setId(cursor.getString(cursor.getColumnIndex(MovieContract.MovieList.COLUMN_MOVIE_ID)));
+                popularMovie.setMovieName(cursor.getString(cursor.getColumnIndex(MovieContract.MovieList.COLUMN_MOVIE_NAME)));
+                popularMovie.setOverView(cursor.getString(cursor.getColumnIndex(MovieContract.MovieList.COLUMN_MOVIE_SYNOPSIS)));
+                popularMovie.setRating(cursor.getString(cursor.getColumnIndex(MovieContract.MovieList.COLUMN_MOVIE_RATING)));
+                popularMovie.setReleaseDate(cursor.getString(cursor.getColumnIndex(MovieContract.MovieList.COLUMN_MOVIE_RELEASE_DATE)));
+                popularMovieArrayList.add(popularMovie);
+            }
+            cursor.close();
+            imageAdapter.notifyDataSetChanged();
+        }
+    }
+
+
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader)
+    {
+
     }
 
 
@@ -237,10 +309,10 @@ public class MainActivityFragment extends Fragment {
                 throws JSONException {
 
             // These are the names of the JSON objects that need to be extracted.
-            final String poster_path = "backdrop_path";
+            final String poster_path = "poster_path";
             final String movie_id = "id";
             final String movie_title = "original_title";
-            final String posterBasePath = "http://image.tmdb.org/t/p/w185/";
+            final String posterBasePath = "http://image.tmdb.org/t/p/w500/";
             final String movieOverview = "overview";
             final String releaseDate = "release_date";
             final String rating = "vote_average";

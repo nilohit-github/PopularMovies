@@ -20,6 +20,7 @@ public class PopularMovie implements Parcelable {
     private String posterUrl;
     private String releaseDate;
     private String  rating;
+    private String overView;
 
 
 
@@ -92,7 +93,7 @@ public class PopularMovie implements Parcelable {
     }
 
 
-    private String overView;
+
 
     @Override
     public int describeContents() {
