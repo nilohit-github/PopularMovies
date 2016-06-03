@@ -34,8 +34,7 @@
     <TextView
         android:id="@+id/overView"
         android:layout_marginTop="8dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+
         android:layout_below="@+id/movieThumbnail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -62,6 +61,7 @@
         />
 
     <ImageButton android:id="@+id/favorite"
+        android:layout_below="@+id/movieName"
         android:layout_marginRight="30dp"
         android:layout_marginTop="10dp"
         android:layout_toRightOf="@+id/rating"
@@ -87,6 +87,27 @@
         android:textColor="#000000"
         android:textSize="32sp"/>
 
+    <TextView
+        android:layout_below="@+id/overView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24dp"
+        android:text="Trailer"
+        android:background="@color/detailBackground"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:id="@+id/trailer_textView" />
+
+    <ListView
+        android:layout_below="@+id/trailer_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/listview_trailers"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"/>
 
 
 

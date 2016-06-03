@@ -10,15 +10,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.appguru.android.popularmovies.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
-import java.net.URI;
+import java.util.ArrayList;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -31,6 +33,9 @@ public class DetailActivityFragment extends Fragment {
     String mSynopsis;
     String mMovieID;
     String mMoviePoster;
+    TrailerAdapter trailerAdapter;
+    private ListView mMovieTrailersListView = null;
+    public ArrayList<MovieTrailer> movieTrailerArrayList;
 
     public DetailActivityFragment() {
     }
@@ -50,6 +55,9 @@ public class DetailActivityFragment extends Fragment {
             TextView synopsis = (TextView) rootView.findViewById(R.id.overView);
             TextView rating = (TextView) rootView.findViewById(R.id.rating);
             TextView releaseDate = (TextView) rootView.findViewById(R.id.releaseDate);
+            mMovieTrailersListView = (ListView) rootView.findViewById(R.id.listview_trailers);
+            movieTrailerArrayList = new ArrayList<MovieTrailer>();
+            trailerAdapter = new TrailerAdapter(getContext(), R.layout.fragment_detail,movieTrailerArrayList );
 
             mMovieName = popularMovie.getMovieName();
             mMovieID = popularMovie.getId();
@@ -71,10 +79,25 @@ public class DetailActivityFragment extends Fragment {
             mImageButton = (ImageButton) rootView.findViewById(R.id.favorite);
         }
 
-       // if(mMovieID != null)
-        //{
-          //  FetchMovieTrailor fetchMovieTrailor = new FetchMovieTrailor(mMovieID);
-      //  }
+        if(mMovieID != null)
+        {
+            FetchMovieTrailer fetchMovieTrailer = new FetchMovieTrailer( getContext(),mMovieID ,movieTrailerArrayList,trailerAdapter);
+            fetchMovieTrailer.execute();
+            mMovieTrailersListView.setAdapter(trailerAdapter);
+        }
+
+        mMovieTrailersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                trailerAdapter.getItem(position);
+                MovieTrailer movieTrailer = trailerAdapter.getItem(position);
+                String movie_id_youtube = "http://www.youtube.com/watch?v=" + movieTrailer.getKEY();
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(movie_id_youtube));
+
+                startActivity(intent);
+            }
+        });
+
         addFavourites();
         return rootView;
     }

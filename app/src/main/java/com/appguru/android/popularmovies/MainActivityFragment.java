@@ -56,11 +56,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     ViewGroup container;
     View rootView;
     ImageAdapter imageAdapter;
+
     private static final int FAVOURITE_LOADER = 0;
     public ArrayList<PopularMovie> popularMovieArrayList;
     GridView gridview;
     Boolean internetAvailable;
-    CharSequence text = "No network coverage";
+    CharSequence text = "No network coverage.You can still view favourites :)";
     Toast toast;
     public MainActivityFragment() {
     }
