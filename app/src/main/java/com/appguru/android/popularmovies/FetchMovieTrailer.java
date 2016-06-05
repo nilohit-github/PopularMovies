@@ -154,6 +154,7 @@ public class FetchMovieTrailer extends AsyncTask<Void, Void, ArrayList<MovieTrai
         final String SITE = "site";
         final String SIZE = "size";
         final String TYPE = "type";
+        movieTrailerArrayList.clear();
 
         try {
             JSONObject moviesJson = new JSONObject(moviesJsonStr);

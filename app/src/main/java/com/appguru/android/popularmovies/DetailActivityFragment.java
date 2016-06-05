@@ -36,6 +36,11 @@ public class DetailActivityFragment extends Fragment {
     TrailerAdapter trailerAdapter;
     private ListView mMovieTrailersListView = null;
     public ArrayList<MovieTrailer> movieTrailerArrayList;
+    ReviewAdapter reviewAdapter;
+    private ListView mMovieReviewListView = null;
+    public ArrayList<MovieReview> movieReviewArrayList;
+
+
 
     public DetailActivityFragment() {
     }
@@ -56,8 +61,11 @@ public class DetailActivityFragment extends Fragment {
             TextView rating = (TextView) rootView.findViewById(R.id.rating);
             TextView releaseDate = (TextView) rootView.findViewById(R.id.releaseDate);
             mMovieTrailersListView = (ListView) rootView.findViewById(R.id.listview_trailers);
+            mMovieReviewListView = (ListView)rootView.findViewById(R.id.listview_review);
             movieTrailerArrayList = new ArrayList<MovieTrailer>();
+            movieReviewArrayList = new ArrayList<MovieReview>();
             trailerAdapter = new TrailerAdapter(getContext(), R.layout.fragment_detail,movieTrailerArrayList );
+            reviewAdapter = new ReviewAdapter(getContext(),R.layout.fragment_detail,movieReviewArrayList);
 
             mMovieName = popularMovie.getMovieName();
             mMovieID = popularMovie.getId();
@@ -84,6 +92,11 @@ public class DetailActivityFragment extends Fragment {
             FetchMovieTrailer fetchMovieTrailer = new FetchMovieTrailer( getContext(),mMovieID ,movieTrailerArrayList,trailerAdapter);
             fetchMovieTrailer.execute();
             mMovieTrailersListView.setAdapter(trailerAdapter);
+
+            FetchMovieReview fetchMovieReview = new FetchMovieReview(getContext(),mMovieID,movieReviewArrayList,reviewAdapter);
+            fetchMovieReview.execute();
+            mMovieReviewListView.setAdapter(reviewAdapter);
+
         }
 
         mMovieTrailersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
