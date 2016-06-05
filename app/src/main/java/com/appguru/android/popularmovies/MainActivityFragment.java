@@ -56,6 +56,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     ViewGroup container;
     View rootView;
     ImageAdapter imageAdapter;
+    private Boolean mTablet;
 
     private static final int FAVOURITE_LOADER = 0;
     public ArrayList<PopularMovie> popularMovieArrayList;
@@ -313,7 +314,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             final String poster_path = "poster_path";
             final String movie_id = "id";
             final String movie_title = "original_title";
-            final String posterBasePath = "http://image.tmdb.org/t/p/w500/";
+            final String posterBasePath = "http://image.tmdb.org/t/p/w185/";
             final String movieOverview = "overview";
             final String releaseDate = "release_date";
             final String rating = "vote_average";
