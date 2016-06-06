@@ -16,6 +16,15 @@ public class DetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if(savedInstanceState == null) {
+
+
+            DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
+           // detailActivityFragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_detail_container, detailActivityFragment).commit();
+
+        }
     }
 
 }

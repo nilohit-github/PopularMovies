@@ -1,7 +1,9 @@
 package com.appguru.android.popularmovies;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,8 +13,18 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callback {
     private Boolean mTabletMode = false;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if(findViewById(R.id.fragment_detail_container)!= null){
+        if (findViewById(R.id.fragment_detail_container) != null) {
             mTabletMode = true;
             if (savedInstanceState == null) {
                 DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
@@ -30,7 +42,10 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-            }
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -55,12 +70,27 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void replaceFragment() {
-        Log.i("tab", "replace");
-        Bundle args = new Bundle();
-        args.putString("ARGUMENTS", "Created from MainActivity");
-        DetailActivityFragment detailActivityFragment = new DetailActivityFragment();
-        detailActivityFragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_detail_container, detailActivityFragment).commit();
+    @Override
+    public void onItemSelected(PopularMovie popularMovie) {
+        if(mTabletMode){
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("myMovies", popularMovie);
+
+            DetailActivityFragment fragment = new DetailActivityFragment();
+            fragment.setArguments(bundle);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_detail_container, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        }
+        else{
+            Intent movieIntent = new Intent(this, DetailActivity.class);
+             movieIntent.putExtra(Intent.EXTRA_TEXT, (Parcelable) popularMovie);
+            startActivity(movieIntent);
+        }
     }
+
+  
+
 }

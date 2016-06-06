@@ -45,6 +45,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.security.auth.callback.Callback;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -64,6 +66,18 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     Boolean internetAvailable;
     CharSequence text = "No network coverage.You can still view favourites :)";
     Toast toast;
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(PopularMovie popularMovie);
+    }
     public MainActivityFragment() {
     }
 
@@ -92,9 +106,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                                         int position, long id) {
                     imageAdapter.getItem(position);
                     PopularMovie pm = imageAdapter.getItem(position);
-                    Intent movieIntent = new Intent(getActivity(), DetailActivity.class);
-                    movieIntent.putExtra(Intent.EXTRA_TEXT, (Parcelable) pm);
-                    startActivity(movieIntent);
+                    ((Callback) getActivity()).onItemSelected(pm);
+                  //  Intent movieIntent = new Intent(getActivity(), DetailActivity.class);
+                   // movieIntent.putExtra(Intent.EXTRA_TEXT, (Parcelable) pm);
+                   // startActivity(movieIntent);
 
                 }
             });

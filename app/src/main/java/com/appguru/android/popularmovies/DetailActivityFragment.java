@@ -51,11 +51,67 @@ public class DetailActivityFragment extends Fragment {
 
         Intent intent = getActivity().getIntent();
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        TextView movieName = (TextView) rootView.findViewById(R.id.movieName);
+            ImageView imageView = (ImageView) rootView.findViewById(R.id.movieThumbnail);
+            TextView synopsis = (TextView) rootView.findViewById(R.id.overView);
+            TextView rating = (TextView) rootView.findViewById(R.id.rating);
+            TextView releaseDate = (TextView) rootView.findViewById(R.id.releaseDate);
+            mMovieTrailersListView = (ListView) rootView.findViewById(R.id.listview_trailers);
+            mMovieReviewListView = (ListView)rootView.findViewById(R.id.listview_review);
+            movieTrailerArrayList = new ArrayList<MovieTrailer>();
+            movieReviewArrayList = new ArrayList<MovieReview>();
+            trailerAdapter = new TrailerAdapter(getContext(), R.layout.fragment_detail,movieTrailerArrayList );
+            reviewAdapter = new ReviewAdapter(getContext(),R.layout.fragment_detail,movieReviewArrayList);
 
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
 
             PopularMovie popularMovie = (PopularMovie) intent.getParcelableExtra(Intent.EXTRA_TEXT);
-            TextView movieName = (TextView) rootView.findViewById(R.id.movieName);
+            mMovieName = popularMovie.getMovieName();
+            mMovieID = popularMovie.getId();
+            mSynopsis = popularMovie.getOverView();
+            mPopularity = popularMovie.getRating();
+            mReleaseDate = popularMovie.getReleaseDate();
+            mMoviePoster = popularMovie.getPosterUrl();
+            movieName.setText(mMovieName);
+            synopsis.setText(mSynopsis);
+
+            if (mPopularity.length() > 1) {
+                mPopularity = (mPopularity.substring(0, 3));
+            }
+
+            rating.setText("Popularity  " + mPopularity + "/10");
+            releaseDate.setText("Release Date  " + (mReleaseDate).substring(0, 4));
+
+            Picasso.with(getContext()).load(popularMovie.getPosterUrl()).into(imageView);
+            mImageButton = (ImageButton) rootView.findViewById(R.id.favorite);
+        }
+        else
+        {
+            Bundle arguments = getArguments();
+            if (arguments != null) {
+                PopularMovie popularMovie = (PopularMovie) arguments.getParcelable("myMovies");
+
+                mMovieName = popularMovie.getMovieName();
+                mMovieID = popularMovie.getId();
+                mSynopsis = popularMovie.getOverView();
+                mPopularity = popularMovie.getRating();
+                mReleaseDate = popularMovie.getReleaseDate();
+                mMoviePoster = popularMovie.getPosterUrl();
+                movieName.setText(mMovieName);
+                synopsis.setText(mSynopsis);
+
+                if (mPopularity.length() > 1) {
+                    mPopularity = (mPopularity.substring(0, 3));
+                }
+
+                rating.setText("Popularity  " + mPopularity + "/10");
+                releaseDate.setText("Release Date  " + (mReleaseDate).substring(0, 4));
+
+                Picasso.with(getContext()).load(popularMovie.getPosterUrl()).into(imageView);
+                mImageButton = (ImageButton) rootView.findViewById(R.id.favorite);
+            }
+        }
+            /*TextView movieName = (TextView) rootView.findViewById(R.id.movieName);
             ImageView imageView = (ImageView) rootView.findViewById(R.id.movieThumbnail);
             TextView synopsis = (TextView) rootView.findViewById(R.id.overView);
             TextView rating = (TextView) rootView.findViewById(R.id.rating);
@@ -84,8 +140,8 @@ public class DetailActivityFragment extends Fragment {
             releaseDate.setText("Release Date  " + (mReleaseDate).substring(0, 4));
 
             Picasso.with(getContext()).load(popularMovie.getPosterUrl()).into(imageView);
-            mImageButton = (ImageButton) rootView.findViewById(R.id.favorite);
-        }
+            mImageButton = (ImageButton) rootView.findViewById(R.id.favorite);*/
+        //}
 
         if(mMovieID != null)
         {
