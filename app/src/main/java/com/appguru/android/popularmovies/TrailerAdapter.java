@@ -35,17 +35,7 @@ public class TrailerAdapter extends ArrayAdapter<MovieTrailer> {
         inflater = LayoutInflater.from(context);
     }
 
-    public static class ViewHolder {
-        public static TextView trailerTextView;
-
-        public ViewHolder(View view) {
-            trailerTextView = (TextView) view.findViewById(R.id.title_textview);
-        }
-    }
-
-
-
-    public int getCount() {
+      public int getCount() {
 
 
         if (movieTrailerArrayList != null) {

@@ -107,9 +107,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                     imageAdapter.getItem(position);
                     PopularMovie pm = imageAdapter.getItem(position);
                     ((Callback) getActivity()).onItemSelected(pm);
-                  //  Intent movieIntent = new Intent(getActivity(), DetailActivity.class);
-                   // movieIntent.putExtra(Intent.EXTRA_TEXT, (Parcelable) pm);
-                   // startActivity(movieIntent);
 
                 }
             });

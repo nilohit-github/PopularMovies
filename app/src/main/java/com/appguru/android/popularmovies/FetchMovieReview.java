@@ -30,7 +30,7 @@ public class FetchMovieReview extends AsyncTask<Void, Void, ArrayList<MovieRevie
     private String mMovieID;
     public ArrayList<MovieReview> movieReviewArrayList ;
     public ReviewAdapter reviewAdapter;
-    final String RESULTS_ARRAY = "results";
+    final String RESULTS = "results";
 
 
 
@@ -115,7 +115,6 @@ public class FetchMovieReview extends AsyncTask<Void, Void, ArrayList<MovieRevie
 
             reviewJsonStr =buffer.toString();
 
-            //end of for
 
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error " + e.getMessage(), e);
@@ -158,8 +157,7 @@ public class FetchMovieReview extends AsyncTask<Void, Void, ArrayList<MovieRevie
             JSONObject moviesJson = new JSONObject(moviesJsonStr);
             String movie_id = moviesJson.getString(MOVIE_ID);
 
-            JSONArray reviewArray = moviesJson.getJSONArray(RESULTS_ARRAY);
-            // Vector<ContentValues> cVVector = new Vector<ContentValues>(moviesArray.length());
+            JSONArray reviewArray = moviesJson.getJSONArray(RESULTS);
 
             for (int i = 0; i < reviewArray.length(); i++) {
                 JSONObject movieJSONObject = reviewArray.getJSONObject(i);
@@ -173,24 +171,10 @@ public class FetchMovieReview extends AsyncTask<Void, Void, ArrayList<MovieRevie
                 content = movieJSONObject.getString("content");
 
                 MovieReview movieReview = new MovieReview(movie_id,author, content);
-                //Log.v(LOG_TAG, "author" + movieReview.getAuthor());
+
 
                 movieReviewArrayList.add(movieReview);
                 }
-               /* ContentValues trailerValues = new ContentValues();
-
-                trailerValues.put(TrailerEntry.COLUMN_MOVIE_ID, movieId);
-                trailerValues.put(TrailerEntry.COLUMN_TRAILER_ID, trailerId);
-                trailerValues.put(TrailerEntry.COLUMN_ISO_369_1, ISO_639_1);
-                trailerValues.put(TrailerEntry.COLUMN_KEY, key);
-                trailerValues.put(TrailerEntry.COLUMN_NAME, name);
-                trailerValues.put(TrailerEntry.COLUMN_SITE, site);
-                trailerValues.put(TrailerEntry.COLUMN_SIZE, size);
-                trailerValues.put(TrailerEntry.COLUMN_TYPE, type);
-                trailerValues.put(MovieEntry.COLUMN_DATE, mDayTime.setJulianDay(mJulianStartDay));
-
-                cVVector.add(trailerValues);*/
-
 
 
         } catch (JSONException e) {

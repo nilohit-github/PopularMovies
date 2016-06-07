@@ -47,13 +47,9 @@ public class FetchMovieTrailer extends AsyncTask<Void, Void, ArrayList<MovieTrai
 
     }
 
-    private boolean DEBUG = true;
-
     @Override
     protected ArrayList<MovieTrailer> doInBackground(Void... ArrayList) {
 
-        // These two need to be declared outside the try/catch
-        // so that they can be closed in the finally block.
         String trailerJsonStr = null;
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
@@ -161,8 +157,6 @@ public class FetchMovieTrailer extends AsyncTask<Void, Void, ArrayList<MovieTrai
              String movie_id = moviesJson.getString(MOVIE_ID);
 
             JSONArray trailerArray = moviesJson.getJSONArray(RESULTS_ARRAY);
-           // Vector<ContentValues> cVVector = new Vector<ContentValues>(moviesArray.length());
-
             for (int i = 0; i < trailerArray.length(); i++) {
                 JSONObject movieJSONObject = trailerArray.getJSONObject(i);
                 if (movieJSONObject.getString(SITE).equals("YouTube")) {
@@ -178,19 +172,7 @@ public class FetchMovieTrailer extends AsyncTask<Void, Void, ArrayList<MovieTrai
                     MovieTrailer movieTrailer = new MovieTrailer(movie_id, trailerId, iso_639_1, key, name, site, size, type);
                     movieTrailerArrayList.add(movieTrailer);
                 }
-               /* ContentValues trailerValues = new ContentValues();
 
-                trailerValues.put(TrailerEntry.COLUMN_MOVIE_ID, movieId);
-                trailerValues.put(TrailerEntry.COLUMN_TRAILER_ID, trailerId);
-                trailerValues.put(TrailerEntry.COLUMN_ISO_369_1, ISO_639_1);
-                trailerValues.put(TrailerEntry.COLUMN_KEY, key);
-                trailerValues.put(TrailerEntry.COLUMN_NAME, name);
-                trailerValues.put(TrailerEntry.COLUMN_SITE, site);
-                trailerValues.put(TrailerEntry.COLUMN_SIZE, size);
-                trailerValues.put(TrailerEntry.COLUMN_TYPE, type);
-                trailerValues.put(MovieEntry.COLUMN_DATE, mDayTime.setJulianDay(mJulianStartDay));
-
-                cVVector.add(trailerValues);*/
             }
 
 
