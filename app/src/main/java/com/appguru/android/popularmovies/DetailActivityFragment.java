@@ -56,12 +56,15 @@ public class DetailActivityFragment extends Fragment {
             TextView synopsis = (TextView) rootView.findViewById(R.id.overView);
             TextView rating = (TextView) rootView.findViewById(R.id.rating);
             TextView releaseDate = (TextView) rootView.findViewById(R.id.releaseDate);
+            releaseDate.setText("Please select a movie to see details");
             mMovieTrailersListView = (ListView) rootView.findViewById(R.id.listview_trailers);
             mMovieReviewListView = (ListView)rootView.findViewById(R.id.listview_review);
             movieTrailerArrayList = new ArrayList<MovieTrailer>();
             movieReviewArrayList = new ArrayList<MovieReview>();
             trailerAdapter = new TrailerAdapter(getContext(), R.layout.fragment_detail,movieTrailerArrayList );
             reviewAdapter = new ReviewAdapter(getContext(),R.layout.fragment_detail,movieReviewArrayList);
+            mImageButton = (ImageButton) rootView.findViewById(R.id.favorite);
+            mImageButton.setEnabled(false);
 
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
 
@@ -83,13 +86,16 @@ public class DetailActivityFragment extends Fragment {
             releaseDate.setText("Release Date  " + (mReleaseDate).substring(0, 4));
 
             Picasso.with(getContext()).load(popularMovie.getPosterUrl()).into(imageView);
-            mImageButton = (ImageButton) rootView.findViewById(R.id.favorite);
+           // mImageButton = (ImageButton) rootView.findViewById(R.id.favorite);
+            mImageButton.setEnabled(true);
         }
         else
         {
             Bundle arguments = getArguments();
+            Log.v("inside bundle","yes");
             if (arguments != null) {
-                PopularMovie popularMovie = (PopularMovie) arguments.getParcelable("myMovies");
+                PopularMovie popularMovie =  arguments.getParcelable("myMovies");
+                Log.v("inside arguments","yes");
 
                 mMovieName = popularMovie.getMovieName();
                 mMovieID = popularMovie.getId();
@@ -108,7 +114,8 @@ public class DetailActivityFragment extends Fragment {
                 releaseDate.setText("Release Date  " + (mReleaseDate).substring(0, 4));
 
                 Picasso.with(getContext()).load(popularMovie.getPosterUrl()).into(imageView);
-                mImageButton = (ImageButton) rootView.findViewById(R.id.favorite);
+               // mImageButton = (ImageButton) rootView.findViewById(R.id.favorite);
+                mImageButton.setEnabled(true);
             }
         }
             /*TextView movieName = (TextView) rootView.findViewById(R.id.movieName);

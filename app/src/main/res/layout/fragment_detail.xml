@@ -15,7 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:fontFamily="sans-serif-medium"
-        android:text="@string/app_name"
         android:padding="16dp"
         android:textColor="#FFFFFF"
         android:textSize="30sp"
@@ -27,8 +26,6 @@
         android:layout_width="100dp"
         android:layout_below="@+id/movieName"
         android:layout_height="150dp"
-
-        android:src="@drawable/sample_0"
         android:scaleType="fitXY"
         android:adjustViewBounds="true"/>
     <TextView
@@ -39,7 +36,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
-        android:text="@string/app_name"
         android:padding="8dp"
         android:textColor="#FFFFFF"
         android:textSize="12sp"

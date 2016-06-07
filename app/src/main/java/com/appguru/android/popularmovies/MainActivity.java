@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     @Override
     public void onItemSelected(PopularMovie popularMovie) {
         if(mTabletMode){
-
+            Log.v("inside main","putting arguments in bundle");
             Bundle bundle = new Bundle();
             bundle.putParcelable("myMovies", popularMovie);
 
@@ -91,6 +91,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         }
     }
 
-  
+
 
 }
